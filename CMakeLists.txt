@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(HolePuncherUI LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets SerialPort)
 
 qt_standard_project_setup()
 
@@ -11,6 +11,8 @@ qt_add_executable(HolePuncherUI
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    serialconfigdialog.h serialconfigdialog.cpp serialconfigdialog.ui
+    serialconfig.h
 
 
 )
@@ -19,6 +21,7 @@ target_link_libraries(HolePuncherUI
     PRIVATE
         Qt::Core
         Qt::Widgets
+        Qt6::SerialPort
 )
 
 include(GNUInstallDirs)
