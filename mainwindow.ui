@@ -80,7 +80,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>60</x>
@@ -91,16 +91,16 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="connectButton">
+      <widget class="QPushButton" name="startButton">
        <property name="text">
-        <string>Connect</string>
+        <string>Start</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="punchButton">
+      <widget class="QPushButton" name="stopButton">
        <property name="text">
-        <string>Punch</string>
+        <string>Stop</string>
        </property>
       </widget>
      </item>
