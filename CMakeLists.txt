@@ -13,6 +13,7 @@ qt_add_executable(HolePuncherUI
     mainwindow.ui
     serialconfigdialog.h serialconfigdialog.cpp serialconfigdialog.ui
     serialconfig.h
+    serialworker.h serialworker.cpp
 
 
 )

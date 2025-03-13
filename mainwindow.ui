@@ -17,108 +17,88 @@
    <locale language="English" country="Canada"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>80</y>
-      <width>211</width>
-      <height>31</height>
+      <x>50</x>
+      <y>70</y>
+      <width>591</width>
+      <height>101</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <pointsize>18</pointsize>
-     </font>
-    </property>
-    <property name="locale">
-     <locale language="English" country="Canada"/>
-    </property>
-    <property name="text">
-     <string>Input SVG File:</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>120</y>
-      <width>611</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLineEdit" name="filePathLineEdit">
-       <property name="locale">
-        <locale language="English" country="Canada"/>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="fileButton">
-       <property name="locale">
-        <locale language="English" country="Canada"/>
-       </property>
-       <property name="text">
-        <string>Browse...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="configButton">
-       <property name="locale">
-        <locale language="English" country="Canada"/>
-       </property>
-       <property name="text">
-        <string>Serial Configuration...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>160</y>
-      <width>371</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QPushButton" name="startButton">
-       <property name="text">
-        <string>Start</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="stopButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Stop</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="statusLabel">
+      <widget class="QLabel" name="label">
        <property name="font">
         <font>
          <pointsize>18</pointsize>
-         <bold>true</bold>
         </font>
        </property>
+       <property name="locale">
+        <locale language="English" country="Canada"/>
+       </property>
        <property name="text">
-        <string>Ready to connect</string>
+        <string>Input SVG File:</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout" columnstretch="1,0,0">
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="filePathLineEdit">
+         <property name="locale">
+          <locale language="English" country="Canada"/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="fileButton">
+         <property name="locale">
+          <locale language="English" country="Canada"/>
+         </property>
+         <property name="text">
+          <string>Browse...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="configButton">
+         <property name="locale">
+          <locale language="English" country="Canada"/>
+         </property>
+         <property name="text">
+          <string>Serial Configuration...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+       <item>
+        <widget class="QPushButton" name="startButton">
+         <property name="text">
+          <string>Start</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="statusLabel">
+         <property name="font">
+          <font>
+           <pointsize>18</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Ready to connect</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
