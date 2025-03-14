@@ -18,7 +18,6 @@ public:
 
 private slots:
     void validate();
-    void confirmed();
     void dataBitsChanged(int index);
     void stopBitsChanged(int index);
     void parityChanged(int index);

@@ -31,7 +31,7 @@ SerialConfigDialog::SerialConfigDialog(QWidget *parent)
     QValidator *validator = new QIntValidator(0, 115200, this);
     ui->baudRateLineEdit->setValidator(validator);
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &SerialConfigDialog::validate);
-    connect(this, &SerialConfigDialog::accepted, this, &SerialConfigDialog::confirmed);
+    connect(this, &SerialConfigDialog::accepted, this, [this](){emit sendConfig(serialConfig);});
     connect(ui->dataBitsComboBox, &QComboBox::currentIndexChanged, this, &SerialConfigDialog::dataBitsChanged);
     connect(ui->stopBitsComboBox, &QComboBox::currentIndexChanged, this, &SerialConfigDialog::stopBitsChanged);
     connect(ui->parityComboBox, &QComboBox::currentIndexChanged, this, &SerialConfigDialog::parityChanged);
@@ -55,11 +55,6 @@ void SerialConfigDialog::validate()
     serialConfig.baudrate = baudrate;
     serialConfig.name = ui->portLocationLineEdit->text();
     accept();
-}
-
-void SerialConfigDialog::confirmed()
-{
-    emit sendConfig(serialConfig);
 }
 
 void SerialConfigDialog::dataBitsChanged(int index)
