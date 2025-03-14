@@ -8,36 +8,6 @@ SerialWorker::SerialWorker(QObject *parent)
     : QObject{parent}
 {}
 
-void SerialWorker::receiveConfig(const SerialConfig& config)
-{
-    m_port.setPortName(config.name);
-    if (!m_port.setBaudRate(config.baudrate))
-    {
-        emit error(m_port.errorString());
-        return;
-    }
-    if (!m_port.setStopBits(config.stopbits))
-    {
-        emit error(m_port.errorString());
-        return;
-    }
-    if (!m_port.setDataBits(config.databits))
-    {
-        emit error(m_port.errorString());
-        return;
-    }
-    if (!m_port.setParity(config.parity))
-    {
-        emit error(m_port.errorString());
-        return;
-    }
-}
-
-void SerialWorker::setFile(const QString& filename)
-{
-    m_filename = filename;
-}
-
 template <size_t N>
 bool SerialWorker::waitForLine(char (&buf)[N])
 {
@@ -65,9 +35,31 @@ bool SerialWorker::waitForOK(char (&buf)[N])
     return true;
 }
 
-void SerialWorker::start()
+void SerialWorker::start(const QString& filename, const SerialConfig& config)
 {
-    if (!parseFile(m_filename)) return;
+    m_port.setPortName(config.name);
+    if (!m_port.setBaudRate(config.baudrate))
+    {
+        emit error(m_port.errorString());
+        return;
+    }
+    if (!m_port.setStopBits(config.stopbits))
+    {
+        emit error(m_port.errorString());
+        return;
+    }
+    if (!m_port.setDataBits(config.databits))
+    {
+        emit error(m_port.errorString());
+        return;
+    }
+    if (!m_port.setParity(config.parity))
+    {
+        emit error(m_port.errorString());
+        return;
+    }
+
+    if (!parseFile(filename)) return;
     char buffer[256];
     if (!m_port.open(QIODeviceBase::ReadWrite | QIODeviceBase::ExistingOnly))
     {

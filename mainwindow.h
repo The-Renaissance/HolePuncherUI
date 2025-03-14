@@ -27,12 +27,12 @@ private slots:
     void onStartClicked();
 
 signals:
-    void openSVG(const QString& filename);
-    void startWorker();
+    void startWorker(const QString& filename, const SerialConfig& config);
 
 private:
     Ui::MainWindow *ui;
     SerialConfigDialog configDialog;
     QThread serialThread;
+    QString filename;
 };
 #endif // MAINWINDOW_H

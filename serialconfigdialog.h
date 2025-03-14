@@ -16,14 +16,10 @@ public:
     explicit SerialConfigDialog(QWidget *parent = nullptr);
     ~SerialConfigDialog();
 
+    SerialConfig getSerialConfig();
+
 private slots:
     void validate();
-    void dataBitsChanged(int index);
-    void stopBitsChanged(int index);
-    void parityChanged(int index);
-
-signals:
-    void sendConfig(const SerialConfig& config);
 
 private:
     Ui::SerialConfigDialog *ui;

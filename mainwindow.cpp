@@ -16,12 +16,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
     connect(ui->fileButton, &QPushButton::clicked, this, &MainWindow::openFileDialog);
     // Both editing the input box and selecting a file via "Browse" chooses the file
-    connect(ui->filePathLineEdit, &QLineEdit::editingFinished, worker, [=](){worker->setFile(ui->filePathLineEdit->text());});
-    connect(this, &MainWindow::openSVG, worker, &SerialWorker::setFile);
+    connect(ui->filePathLineEdit, &QLineEdit::editingFinished, this, [this](){auto name = ui->filePathLineEdit->text();
+            if (!name.isEmpty()) filename = name;});
 
     // connect(worker, &SerialWorker::serialError, this, &MainWindow::onSerialError);
     connect(worker, &SerialWorker::error, this, &MainWindow::onGenericError);
-    connect(&configDialog, &SerialConfigDialog::sendConfig, worker, &SerialWorker::receiveConfig);
     connect(worker, &SerialWorker::finished, this, &MainWindow::onPunchFinish);
     connect(this, &MainWindow::startWorker, worker, &SerialWorker::start);
 
@@ -76,7 +75,7 @@ void MainWindow::openFileDialog()
                 "Open SVG Image", QString(), "Images (*.svg)");
     if (!filename.isEmpty()) {
         ui->filePathLineEdit->setText(filename);
-        emit openSVG(filename);
+        this->filename = filename;
     }
 }
 
@@ -85,5 +84,5 @@ void MainWindow::onStartClicked()
     ui->statusLabel->setText("Punch in progress...");
     ui->statusLabel->setStyleSheet("QLabel {color: black}");
     ui->startButton->setEnabled(false);
-    emit startWorker();
+    emit startWorker(filename, configDialog.getSerialConfig());
 }

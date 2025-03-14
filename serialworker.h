@@ -11,9 +11,7 @@ public:
     explicit SerialWorker(QObject *parent = nullptr);
 
 public slots:
-    void setFile(const QString& filename);
-    void receiveConfig(const SerialConfig& config);
-    void start();
+    void start(const QString& filename, const SerialConfig& config);
 
 signals:
     void finished();
@@ -21,7 +19,6 @@ signals:
     void error(const QString& err);
 
 private:
-    QString m_filename;
     QSerialPort m_port;
     struct
     {
