@@ -6,12 +6,14 @@
 
 SerialWorker::SerialWorker(QObject *parent)
     : QObject{parent}
+    , m_port(this)
 {}
 
 template <size_t N>
 bool SerialWorker::waitForLine(char (&buf)[N])
 {
-    do
+    // If there is at least a line already for us to read, read it.
+    while (!m_port.canReadLine())
     {
         if (!m_port.waitForReadyRead(m_timeout_ms))
         {
@@ -19,7 +21,7 @@ bool SerialWorker::waitForLine(char (&buf)[N])
             emit error(QStringLiteral("Read timing out after %1 seconds.").arg(m_timeout_ms/1000));
             return false;
         }
-    } while (!m_port.canReadLine());
+    }
     m_port.readLine(buf, N);
     return true;
 }
@@ -30,7 +32,6 @@ bool SerialWorker::waitForOK(char (&buf)[N])
     do
     {
         if (!waitForLine(buf)) return false;
-
     } while (std::strcmp(buf, "ok\n") != 0);
     return true;
 }
@@ -83,7 +84,7 @@ void SerialWorker::start(const QString& filename, const SerialConfig& config)
     if (!waitForOK(buffer)) return;
 
     // get tool head current position, which is the center of the printer bed
-    static const QRegularExpression re("X:(.+) Y:(.+) Z");
+    static const QRegularExpression re("X:([0-9]+\\.[0-9]+) Y:([0-9]+\\.[0-9]+) Z");
     m_port.write("M114\n");
     if (!waitForLine(buffer)) return;
     auto match = re.match(buffer);
@@ -127,12 +128,18 @@ bool SerialWorker::punchHoles(double cx, double cy, char (&buf)[N])
 
     m_port.write("G90\n"); // use absolute positioning
     if (!waitForOK(buf)) return false;
+    m_port.write("G0 Z50\n"); // set z=50
+    if (!waitForOK(buf)) return false;
+    m_port.write("M400\n");
+    if (!waitForOK(buf)) return false;
     for (const auto& h : std::as_const(m_svgCanvas.holes))
     {
         double printerx = cx + (h.x - svgcx) * scale;
         double printery = cy + (svgcy - h.y) * scale; // flip y-axis
-        m_port.write(QStringLiteral("G0 X%1 Y%2\n")
-                         .arg(printerx, 0, 'g', 2).arg(printery, 0, 'g', 2).toUtf8());
+        qDebug("Punching hole at X=%.2f, Y=%.2f", printerx, printery);
+        QString command = QStringLiteral("G0 X%1 Y%2\n").arg(printerx, 0, 'f', 2).arg(printery, 0, 'f', 2);
+        qDebug() << command;
+        m_port.write(command.toUtf8());
         if (!waitForOK(buf)) return false;
         m_port.write("M400\n"); // wait for printer head to move to the correct position
         if (!waitForOK(buf)) return false;
@@ -140,6 +147,7 @@ bool SerialWorker::punchHoles(double cx, double cy, char (&buf)[N])
         QThread::sleep(2); // wait for 2 seconds
         // TODO: raiseHolePunch();
     }
+    m_port.close();
     return true;
 }
 

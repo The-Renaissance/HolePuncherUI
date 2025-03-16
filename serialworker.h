@@ -33,7 +33,7 @@ private:
         };
         QVector<hole> holes;
     } m_svgCanvas;
-    const int m_timeout_ms = 10000; // Serial timeout is 10s.
+    const int m_timeout_ms = 40000; // Serial timeout is 40s.
 
     bool parseFile(const QString& filename);
     template <size_t N>
