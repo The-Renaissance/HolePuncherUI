@@ -12,6 +12,7 @@ SerialWorker::SerialWorker(QObject *parent)
 template <size_t N>
 bool SerialWorker::waitForLine(char (&buf)[N])
 {
+    static_assert(N > 1, "readLine() requires the array size to be greater than 1.");
     // If there is at least a line already for us to read, read it.
     while (!m_port.canReadLine())
     {
@@ -112,15 +113,13 @@ void SerialWorker::start(const QString& filename, const SerialConfig& config)
     if (!punchHoles(centerx, centery, buffer)) return;
 
     // we tell the main thread that we have finished
+    m_port.close();
     emit finished();
 }
 
 template <size_t N>
 bool SerialWorker::punchHoles(double cx, double cy, char (&buf)[N])
 {
-    // We try to "fit" the SVG canvas on top of the printer bed geometry,
-    // with their centers aligned. For SVG, (0,0) is top left. However,
-    // for the printer, (0,0) is bottom left.
     double svgWidth = m_svgCanvas.size.width, svgHeight = m_svgCanvas.size.height;
     double printerWidth = cx * 2, printerHeight = cy * 2;
     double scale = std::min(printerWidth / svgWidth, printerHeight / svgHeight);
@@ -134,12 +133,10 @@ bool SerialWorker::punchHoles(double cx, double cy, char (&buf)[N])
     if (!waitForOK(buf)) return false;
     for (const auto& h : std::as_const(m_svgCanvas.holes))
     {
-        double printerx = cx + (h.x - svgcx) * scale;
-        double printery = cy + (svgcy - h.y) * scale; // flip y-axis
+        // We try to fit the SVG canvas on top of the printer bed. Instead of their centers being aligned, now their bottom left corners are aligned.
+        double printerx = h.x * scale, printery = (svgHeight - h.y) * scale; // flip y-axis
         qDebug("Punching hole at X=%.2f, Y=%.2f", printerx, printery);
-        QString command = QStringLiteral("G0 X%1 Y%2\n").arg(printerx, 0, 'f', 2).arg(printery, 0, 'f', 2);
-        qDebug() << command;
-        m_port.write(command.toUtf8());
+        m_port.write(QStringLiteral("G0 X%1 Y%2\n").arg(printerx, 0, 'f', 2).arg(printery, 0, 'f', 2).toUtf8());
         if (!waitForOK(buf)) return false;
         m_port.write("M400\n"); // wait for printer head to move to the correct position
         if (!waitForOK(buf)) return false;
@@ -147,7 +144,6 @@ bool SerialWorker::punchHoles(double cx, double cy, char (&buf)[N])
         QThread::sleep(2); // wait for 2 seconds
         // TODO: raiseHolePunch();
     }
-    m_port.close();
     return true;
 }
 
