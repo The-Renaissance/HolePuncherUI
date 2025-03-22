@@ -155,6 +155,7 @@ bool SerialWorker::parseFile(const QString& filename)
         return false;
     }
     qDebug() << "Parsing file " << filename;
+    m_svgCanvas.holes.clear();
     QFile svg(filename);
     if (!svg.open(QIODeviceBase::ReadOnly))
     {
