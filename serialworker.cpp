@@ -209,6 +209,11 @@ bool SerialWorker::parseFile(const QString& filename)
         emit error(QStringLiteral("Cannot detect SVG elements."));
         return false;
     }
+    if (m_svgCanvas.size.width < 0 || m_svgCanvas.size.height < 0)
+    {
+        emit error(QStringLiteral("SVG width or height is negative."));
+        return false;
+    }
     qDebug("SVG width=%f, height=%f", m_svgCanvas.size.width, m_svgCanvas.size.height);
     return true;
 }
