@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "serialworker.h"
 #include <QFileDialog>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -57,9 +58,10 @@ void MainWindow::onSerialError(QSerialPort::SerialPortError err)
 
 void MainWindow::onGenericError(const QString& err)
 {
-    ui->statusLabel->setText("Error: " + err);
+    ui->statusLabel->setText("Error!");
     ui->statusLabel->setStyleSheet("QLabel {color: red}");
     ui->startButton->setEnabled(true);
+    QMessageBox::critical(this, "Error", err);
 }
 
 void MainWindow::onPunchFinish()
