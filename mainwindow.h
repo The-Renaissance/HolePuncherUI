@@ -34,5 +34,6 @@ private:
     SerialConfigDialog configDialog;
     QThread serialThread;
     QString filename;
+    QString defaultStyle;
 };
 #endif // MAINWINDOW_H

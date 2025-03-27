@@ -151,7 +151,7 @@ bool SerialWorker::parseFile(const QString& filename)
 {
     if (filename.isEmpty())
     {
-        emit error("file name is not set.");
+        emit error("SVG file name is not set.");
         return false;
     }
     qDebug() << "Parsing file " << filename;

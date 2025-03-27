@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent)
     , configDialog(this)
 {
     ui->setupUi(this);
+
+    defaultStyle = ui->label->styleSheet();
+
     SerialWorker *worker = new SerialWorker;
     worker->moveToThread(&serialThread);
     connect(&serialThread, &QThread::finished, worker, &QObject::deleteLater);
@@ -67,7 +70,7 @@ void MainWindow::onGenericError(const QString& err)
 void MainWindow::onPunchFinish()
 {
     ui->statusLabel->setText("Ready to connect");
-    ui->statusLabel->setStyleSheet("QLabel {color: black}");
+    ui->statusLabel->setStyleSheet(defaultStyle);
     ui->startButton->setEnabled(true);
 }
 
@@ -84,7 +87,7 @@ void MainWindow::openFileDialog()
 void MainWindow::onStartClicked()
 {
     ui->statusLabel->setText("Punch in progress...");
-    ui->statusLabel->setStyleSheet("QLabel {color: black}");
+    ui->statusLabel->setStyleSheet(defaultStyle);
     ui->startButton->setEnabled(false);
     emit startWorker(filename, configDialog.getSerialConfig());
 }
