@@ -17,6 +17,7 @@ signals:
     void finished();
     // void serialError(QSerialPort::SerialPortError err);
     void error(const QString& err);
+    void stopped();
 
 private:
     QSerialPort m_port;

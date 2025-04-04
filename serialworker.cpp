@@ -16,6 +16,13 @@ bool SerialWorker::waitForLine(char (&buf)[N])
     // If there is at least a line already for us to read, read it.
     while (!m_port.canReadLine())
     {
+        if (QThread::currentThread()->isInterruptionRequested())
+        {
+            m_port.write("M410\n"); // stop all movement
+            m_port.close();
+            emit stopped();
+            return false;
+        }
         if (!m_port.waitForReadyRead(m_timeout_ms))
         {
             m_port.close();
@@ -80,6 +87,13 @@ void SerialWorker::start(const QString& filename, const SerialConfig& config)
     }
     if (!waitForOK(buffer)) return;
 
+    if (QThread::currentThread()->isInterruptionRequested())
+    {
+        m_port.close();
+        emit stopped();
+        return;
+    }
+
     // home tool head
     m_port.write("G28\n");
     if (!waitForOK(buffer)) return;
@@ -125,19 +139,46 @@ bool SerialWorker::punchHoles(double cx, double cy, char (&buf)[N])
     double scale = std::min(printerWidth / svgWidth, printerHeight / svgHeight);
     double svgcx = svgWidth / 2, svgcy = svgHeight / 2;
 
+    if (QThread::currentThread()->isInterruptionRequested())
+    {
+        m_port.close();
+        emit stopped();
+        return false;
+    }
+
     m_port.write("G90\n"); // use absolute positioning
     if (!waitForOK(buf)) return false;
     m_port.write("G0 Z50\n"); // set z=50
     if (!waitForOK(buf)) return false;
+    if (QThread::currentThread()->isInterruptionRequested())
+    {
+        m_port.write("M410\n"); // stop all movement
+        m_port.close();
+        emit stopped();
+        return false;
+    }
     m_port.write("M400\n");
     if (!waitForOK(buf)) return false;
     for (const auto& h : std::as_const(m_svgCanvas.holes))
     {
+        if (QThread::currentThread()->isInterruptionRequested())
+        {
+            m_port.close();
+            emit stopped();
+            return false;
+        }
         // We try to fit the SVG canvas on top of the printer bed. Instead of their centers being aligned, now their bottom left corners are aligned.
         double printerx = h.x * scale, printery = (svgHeight - h.y) * scale; // flip y-axis
         qDebug("Punching hole at X=%.2f, Y=%.2f", printerx, printery);
         m_port.write(QStringLiteral("G0 X%1 Y%2\n").arg(printerx, 0, 'f', 2).arg(printery, 0, 'f', 2).toUtf8());
         if (!waitForOK(buf)) return false;
+        if (QThread::currentThread()->isInterruptionRequested())
+        {
+            m_port.write("M410\n"); // stop all movement
+            m_port.close();
+            emit stopped();
+            return false;
+        }
         m_port.write("M400\n"); // wait for printer head to move to the correct position
         if (!waitForOK(buf)) return false;
         // TODO: lowerHolePunch();
@@ -167,6 +208,11 @@ bool SerialWorker::parseFile(const QString& filename)
     bool hassvg = false;
     while ((tokentype = svgReader.readNext()) != QXmlStreamReader::EndDocument)
     {
+        if (QThread::currentThread()->isInterruptionRequested())
+        {
+            emit stopped();
+            return false;
+        }
         if (tokentype == QXmlStreamReader::Invalid)
         {
             static constexpr auto getXmlErrorString = [](QXmlStreamReader::Error err)

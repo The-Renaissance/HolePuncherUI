@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&serialThread, &QThread::finished, worker, &QObject::deleteLater);
     connect(ui->configButton, &QPushButton::clicked, &configDialog, &SerialConfigDialog::show);
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::onStartClicked);
+    connect(ui->stopButton, &QPushButton::clicked, this, [this](){serialThread.requestInterruption(); ui->statusLabel->setText(QStringLiteral("Stopping punching operation..."));});
     connect(ui->fileButton, &QPushButton::clicked, this, &MainWindow::openFileDialog);
     // Both editing the input box and selecting a file via "Browse" chooses the file
     connect(ui->filePathLineEdit, &QLineEdit::editingFinished, this, [this](){auto name = ui->filePathLineEdit->text();
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(worker, &SerialWorker::error, this, &MainWindow::onGenericError);
     connect(worker, &SerialWorker::finished, this, &MainWindow::onPunchFinish);
     connect(this, &MainWindow::startWorker, worker, &SerialWorker::start);
+    connect(worker, &SerialWorker::stopped, this, &MainWindow::onPunchStop);
 
     serialThread.start();
 }
@@ -64,6 +66,7 @@ void MainWindow::onGenericError(const QString& err)
     ui->statusLabel->setText("Error!");
     ui->statusLabel->setStyleSheet("QLabel {color: red}");
     ui->startButton->setEnabled(true);
+    ui->stopButton->setEnabled(false);
     QMessageBox::critical(this, "Error", err);
 }
 
@@ -72,6 +75,7 @@ void MainWindow::onPunchFinish()
     ui->statusLabel->setText("Ready to connect");
     ui->statusLabel->setStyleSheet(defaultStyle);
     ui->startButton->setEnabled(true);
+    ui->stopButton->setEnabled(false);
 }
 
 void MainWindow::openFileDialog()
@@ -89,5 +93,14 @@ void MainWindow::onStartClicked()
     ui->statusLabel->setText("Punch in progress...");
     ui->statusLabel->setStyleSheet(defaultStyle);
     ui->startButton->setEnabled(false);
+    ui->stopButton->setEnabled(true);
     emit startWorker(filename, configDialog.getSerialConfig());
+}
+
+void MainWindow::onPunchStop()
+{
+    ui->statusLabel->setText("Operation stopped.");
+    ui->statusLabel->setStyleSheet("QLabel {color: red}");
+    ui->stopButton->setEnabled(false);
+    ui->startButton->setEnabled(true);
 }

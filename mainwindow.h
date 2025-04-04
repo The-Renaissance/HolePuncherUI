@@ -24,6 +24,7 @@ private slots:
     void onGenericError(const QString& err);
     void openFileDialog();
     void onPunchFinish();
+    void onPunchStop();
     void onStartClicked();
 
 signals:
