@@ -11,6 +11,7 @@ struct SerialConfig
     QSerialPort::DataBits databits;
     QSerialPort::StopBits stopbits;
     QSerialPort::Parity parity;
+    QSerialPort::FlowControl flowControl;
     QString name;
 };
 

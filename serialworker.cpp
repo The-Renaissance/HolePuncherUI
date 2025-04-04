@@ -67,6 +67,11 @@ void SerialWorker::start(const QString& filename, const SerialConfig& config)
         emit error(m_port.errorString());
         return;
     }
+    if (!m_port.setFlowControl(config.flowControl))
+    {
+        emit error(m_port.errorString());
+        return;
+    }
 
     if (!parseFile(filename)) return;
     char buffer[256];

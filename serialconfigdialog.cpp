@@ -28,6 +28,12 @@ SerialConfigDialog::SerialConfigDialog(QWidget *parent)
             "Space",
             "Mark",
         });
+    ui->flowControlComboBox->addItems(
+        {
+            "No flow control",
+            "RTS/CTS",
+            "XON/XOFF",
+        });
     QValidator *validator = new QIntValidator(0, 115200, this);
     ui->baudRateLineEdit->setValidator(validator);
     connect(this, &SerialConfigDialog::accepted, this, &SerialConfigDialog::validate);
@@ -77,6 +83,14 @@ void SerialConfigDialog::validate()
         };
     index = ui->parityComboBox->currentIndex();
     if (index >= 0) serialConfig.parity = parityOptions[index];
+    constexpr QSerialPort::FlowControl flowControlOptions[] =
+        {
+            QSerialPort::FlowControl::NoFlowControl,
+            QSerialPort::FlowControl::HardwareControl,
+            QSerialPort::FlowControl::SoftwareControl,
+        };
+    index = ui->flowControlComboBox->currentIndex();
+    if (index >= 0) serialConfig.flowControl = flowControlOptions[index];
 }
 
 SerialConfig SerialConfigDialog::getSerialConfig()
